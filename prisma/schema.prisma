@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model location {
+  id                    BigInt   @id(map: "location_pk") @default(autoincrement())
+  street_number         String?  @db.VarChar(16)
+  street_name           String?  @db.VarChar(128)
+  city                  String   @db.VarChar(128)
+  state                 String   @db.VarChar(128)
+  country               String   @db.VarChar(64)
+  postcode              String   @db.VarChar(16)
+  coordinates_latitude  String   @db.VarChar(128)
+  coordinates_longitude String   @db.VarChar(128)
+  timezone_offset       String   @db.VarChar(8)
+  timezone_description  String   @db.VarChar(64)
+  person                person[]
+}
+
+model login {
+  id        BigInt @id(map: "login_pk") @default(autoincrement())
+  uuid      String @db.VarChar(64)
+  username  String @db.VarChar(32)
+  password  String @db.VarChar(64)
+  salt      String @db.VarChar(32)
+  md5       String @db.VarChar(64)
+  sha1      String @db.VarChar(64)
+  sha256    String @db.VarChar(128)
+  person_id BigInt
+  person    person @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "person_id")
+}
+
+model person {
+  id                BigInt   @id(map: "person_pk") @default(autoincrement())
+  gender            String   @db.VarChar(16)
+  title             String   @db.VarChar(16)
+  first_name        String   @db.VarChar(64)
+  last_name         String   @db.VarChar(64)
+  email             String   @db.VarChar(64)
+  dob_date          DateTime @db.Timestamp(6)
+  dob_age           Int
+  registered_date   DateTime @db.Timestamp(6)
+  registered_age    Int
+  phone             String   @db.VarChar(32)
+  cell              String   @db.VarChar(32)
+  id_name           String   @db.VarChar(8)
+  id_value          String?
+  picture_large     String
+  picture_medium    String
+  picture_thumbnail String
+  nat               String   @db.VarChar(8)
+  location_id       BigInt   @default(autoincrement())
+  login             login[]
+  location          location @relation(fields: [location_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "location_id")
+}
